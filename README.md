@@ -12,6 +12,20 @@ what each marker measures and what could cause a high or low result.
 The app is stateless: nothing you enter is saved to disk. Values live only in
 memory for the current session.
 
+## Screenshots
+
+**Initial view** — select sex and panels, enter values:
+
+![Initial view](screenshots/01_initial_view.png)
+
+**Results view** — abnormal results surfaced first, color-coded by severity:
+
+![Results view](screenshots/02_results_view.png)
+
+**Expanded results** — click a result to see what it measures and possible causes:
+
+![Expanded results view](screenshots/03_expanded_view.png)
+
 ## Panels covered (v1)
 
 - **CBC** — Complete Blood Count (WBC, RBC, hemoglobin, hematocrit, indices,
