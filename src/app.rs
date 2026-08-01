@@ -22,6 +22,7 @@ pub struct BloodAnalyzerApp {
     pub show_reference_window: bool,
     pub show_history_window: bool,
     pub show_compare_window: bool,
+    pub show_about_window: bool,
     pub compare_a: Option<usize>,
     pub compare_b: Option<usize>,
     pub status_message: Option<String>,
@@ -44,6 +45,7 @@ impl BloodAnalyzerApp {
             show_reference_window: false,
             show_history_window: false,
             show_compare_window: false,
+            show_about_window: false,
             compare_a: None,
             compare_b: None,
             status_message: None,
@@ -185,6 +187,9 @@ impl eframe::App for BloodAnalyzerApp {
         }
         if self.show_compare_window {
             ui::compare_window::show(ui.ctx(), self);
+        }
+        if self.show_about_window {
+            ui::about_window::show(ui.ctx(), self);
         }
 
         egui::CentralPanel::default().show(ui, |ui| {

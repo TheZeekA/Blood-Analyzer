@@ -14,7 +14,7 @@ guidance, and can save results over time to compare against each other.
 
 ## Screenshots
 
-**Initial view** — all three panels visible at once, no scrolling needed:
+**Initial view** — panels laid out as cards that pack tightly with no wasted space, no scrolling needed for the default set:
 
 ![Initial view](screenshots/01_initial_view.png)
 
@@ -34,10 +34,19 @@ guidance, and can save results over time to compare against each other.
 
 ![Compare window](screenshots/05_compare.png)
 
+**About** — click the logo (top right) for developer credit and the project repository:
+
+![About dialog](screenshots/06_about.png)
+
 ## Features
 
-- **CBC, CMP, and Lipid panels** — 32 markers total, laid out side by side so
-  everything fits on screen without scrolling
+- **64 markers across 11 panels** — CBC, CMP, Lipid, Thyroid, Iron Studies,
+  Vitamins, Inflammatory Markers, Coagulation, Hormones, Cardiac Markers, and
+  Autoimmune Markers. Panels pack into a masonry-style layout (each column
+  stacks its own panels independently) sized from the actual content, so
+  nothing gets clipped or leaves large gaps regardless of window size or which
+  panels are selected. CBC/CMP/Lipid are shown by default; the rest are opt-in
+  via the Panels checkboxes.
 - **SI ⇄ US unit toggle** — switch units at any time; already-entered values
   convert automatically
 - **Editable reference ranges** — open "Reference Data" to see and adjust any
@@ -52,10 +61,15 @@ guidance, and can save results over time to compare against each other.
 - **Lifestyle notes** — short, non-prescriptive suggestions (sourced from
   public health guidance such as the AHA/CDC/ADA) shown for markers where a
   general tip is responsible to give; deliberately omitted for markers like
-  potassium where the right next step is a clinician, not a diet tip
+  potassium, ANA, or troponin where the right next step is a clinician, not a
+  diet tip
+- **Custom app icon** — both the window/taskbar icon and the compiled `.exe`
+  itself use the project's icon; click the logo in the top-right corner for
+  developer credit and a link to the GitHub repository
 
 Reference ranges are given in SI units by default and are sex-specific where
-clinically relevant (e.g. hemoglobin, hematocrit, RBC, creatinine, HDL).
+clinically relevant (e.g. hemoglobin, hematocrit, RBC, creatinine, HDL,
+testosterone).
 
 ## Data storage
 
@@ -76,7 +90,8 @@ already installed).
 cargo build --release
 ```
 
-The native executable is produced at `target\release\blood_analyzer.exe`.
+The native executable is produced at `target\release\blood_analyzer.exe`,
+with the project icon (`images/blood_analyzer.ico`) embedded in the binary.
 
 To run directly during development:
 
@@ -105,3 +120,5 @@ cargo test
    **Compare** shows any two snapshots side by side with the change per
    marker.
 7. **Export PDF** — save a report of the current results.
+8. Click the logo (top right) for developer credit and a link to the GitHub
+   repository.
