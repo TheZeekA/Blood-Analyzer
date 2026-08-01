@@ -10,6 +10,14 @@ pub enum Panel {
     Cbc,
     Cmp,
     Lipid,
+    Thyroid,
+    IronStudies,
+    Vitamins,
+    Inflammatory,
+    Coagulation,
+    Hormones,
+    Cardiac,
+    Autoimmune,
 }
 
 impl Panel {
@@ -18,10 +26,30 @@ impl Panel {
             Panel::Cbc => "Complete Blood Count (CBC)",
             Panel::Cmp => "Comprehensive Metabolic Panel (CMP)",
             Panel::Lipid => "Lipid Panel",
+            Panel::Thyroid => "Thyroid Panel",
+            Panel::IronStudies => "Iron Studies",
+            Panel::Vitamins => "Vitamin Panel",
+            Panel::Inflammatory => "Inflammatory Markers",
+            Panel::Coagulation => "Coagulation Panel",
+            Panel::Hormones => "Hormones",
+            Panel::Cardiac => "Cardiac Markers",
+            Panel::Autoimmune => "Autoimmune Markers",
         }
     }
 
-    pub const ALL: [Panel; 3] = [Panel::Cbc, Panel::Cmp, Panel::Lipid];
+    pub const ALL: [Panel; 11] = [
+        Panel::Cbc,
+        Panel::Cmp,
+        Panel::Lipid,
+        Panel::Thyroid,
+        Panel::IronStudies,
+        Panel::Vitamins,
+        Panel::Inflammatory,
+        Panel::Coagulation,
+        Panel::Hormones,
+        Panel::Cardiac,
+        Panel::Autoimmune,
+    ];
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

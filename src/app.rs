@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use chrono::Local;
 
@@ -12,9 +12,7 @@ use crate::ui;
 
 pub struct BloodAnalyzerApp {
     pub sex: Sex,
-    pub show_cbc: bool,
-    pub show_cmp: bool,
-    pub show_lipid: bool,
+    pub enabled_panels: HashSet<Panel>,
     pub unit_system: UnitSystem,
     pub inputs: HashMap<&'static str, String>,
     pub results: HashMap<&'static str, AnalysisResult>,
@@ -36,9 +34,7 @@ impl BloodAnalyzerApp {
     pub fn new() -> Self {
         Self {
             sex: Sex::Male,
-            show_cbc: true,
-            show_cmp: true,
-            show_lipid: true,
+            enabled_panels: HashSet::from([Panel::Cbc, Panel::Cmp, Panel::Lipid]),
             unit_system: UnitSystem::Si,
             inputs: HashMap::new(),
             results: HashMap::new(),
@@ -56,10 +52,14 @@ impl BloodAnalyzerApp {
     }
 
     pub fn panel_selected(&self, panel: Panel) -> bool {
-        match panel {
-            Panel::Cbc => self.show_cbc,
-            Panel::Cmp => self.show_cmp,
-            Panel::Lipid => self.show_lipid,
+        self.enabled_panels.contains(&panel)
+    }
+
+    pub fn set_panel_selected(&mut self, panel: Panel, enabled: bool) {
+        if enabled {
+            self.enabled_panels.insert(panel);
+        } else {
+            self.enabled_panels.remove(&panel);
         }
     }
 
