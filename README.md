@@ -122,3 +122,7 @@ cargo test
 7. **Export PDF** — save a report of the current results.
 8. Click the logo (top right) for developer credit and a link to the GitHub
    repository.
+
+## Notes on AI
+
+Claude was used in this project to write the README.md and other .md files. It was also used to assist in debugging and testing.
