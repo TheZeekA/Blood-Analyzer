@@ -8,6 +8,11 @@ use crate::reference_data;
 /// rows rather than squashing everything into one ever-narrower row.
 const MAX_COLUMNS_PER_ROW: usize = 4;
 
+const ROW_HEIGHT: f32 = 20.0;
+const INPUT_WIDTH: f32 = 68.0;
+const LABEL_MIN_WIDTH: f32 = 110.0;
+const LABEL_MAX_WIDTH: f32 = 300.0;
+
 pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
     let visible_panels: Vec<Panel> = Panel::ALL.into_iter().filter(|p| app.panel_selected(*p)).collect();
 
@@ -19,33 +24,57 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
     for row in visible_panels.chunks(MAX_COLUMNS_PER_ROW) {
         ui.columns(row.len(), |columns| {
             for (col, panel) in columns.iter_mut().zip(row.iter()) {
-                render_panel_column(col, app, *panel);
+                render_panel_card(col, app, *panel);
             }
         });
-        ui.add_space(12.0);
+        ui.add_space(10.0);
     }
 }
 
-fn render_panel_column(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, panel: Panel) {
-    ui.heading(panel.label());
-    ui.add_space(4.0);
+/// Width of the widest parameter name in this panel, so every input box in
+/// the column lines up regardless of label length.
+fn label_column_width(ui: &egui::Ui, panel: Panel) -> f32 {
+    let font_id = egui::TextStyle::Body.resolve(ui.style());
+    let widest = reference_data::PARAMETERS
+        .iter()
+        .filter(|p| p.panel == panel)
+        .map(|p| ui.painter().layout_no_wrap(p.name.to_string(), font_id.clone(), Color32::WHITE).rect.width())
+        .fold(0.0_f32, f32::max);
+    (widest + 6.0).clamp(LABEL_MIN_WIDTH, LABEL_MAX_WIDTH)
+}
 
-    let unit_system = app.unit_system;
+fn render_panel_card(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, panel: Panel) {
+    let visuals = ui.visuals().clone();
+    egui::Frame::new()
+        .fill(visuals.window_fill)
+        .stroke(visuals.window_stroke)
+        .corner_radius(6.0)
+        .inner_margin(egui::Margin::same(10))
+        .show(ui, |ui| {
+            ui.set_width(ui.available_width());
+            ui.label(RichText::new(panel.label()).strong().size(15.0));
+            ui.add_space(4.0);
 
-    for param in reference_data::PARAMETERS.iter().filter(|p| p.panel == panel) {
-        ui.horizontal(|ui| {
-            ui.add_sized([160.0, 18.0], egui::Label::new(param.name));
-            let text = app.inputs.entry(param.id).or_default();
-            ui.add(egui::TextEdit::singleline(text).desired_width(65.0));
-            ui.label(param.unit_for(unit_system));
+            let label_width = label_column_width(ui, panel);
+            let unit_system = app.unit_system;
+            let striped_bg = visuals.faint_bg_color;
+
+            for (i, param) in reference_data::PARAMETERS.iter().filter(|p| p.panel == panel).enumerate() {
+                let bg = if i % 2 == 0 { striped_bg } else { Color32::TRANSPARENT };
+                egui::Frame::new().fill(bg).inner_margin(egui::Margin::symmetric(4, 2)).show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        ui.add_sized([label_width, ROW_HEIGHT], egui::Label::new(param.name));
+                        let text = app.inputs.entry(param.id).or_default();
+                        ui.add_sized([INPUT_WIDTH, ROW_HEIGHT], egui::TextEdit::singleline(text));
+                        ui.label(param.unit_for(unit_system));
+                    });
+
+                    if let Some(result) = app.results.get(param.id) {
+                        render_result(ui, param, result, unit_system);
+                    }
+                });
+            }
         });
-
-        if let Some(result) = app.results.get(param.id) {
-            render_result(ui, param, result, unit_system);
-        }
-
-        ui.add_space(2.0);
-    }
 }
 
 fn render_result(ui: &mut egui::Ui, param: &Parameter, result: &AnalysisResult, unit_system: UnitSystem) {
@@ -64,7 +93,8 @@ fn render_result(ui: &mut egui::Ui, param: &Parameter, result: &AnalysisResult, 
         unit,
     ))
     .color(color)
-    .strong();
+    .strong()
+    .small();
 
     egui::CollapsingHeader::new(header)
         .id_salt(param.id)
