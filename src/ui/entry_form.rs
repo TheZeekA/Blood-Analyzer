@@ -4,6 +4,10 @@ use crate::app::BloodAnalyzerApp;
 use crate::model::{format_display_value, AnalysisResult, Panel, Parameter, Status, UnitSystem};
 use crate::reference_data;
 
+/// Columns are laid out in rows of at most this many, wrapping to additional
+/// rows rather than squashing everything into one ever-narrower row.
+const MAX_COLUMNS_PER_ROW: usize = 4;
+
 pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
     let visible_panels: Vec<Panel> = Panel::ALL.into_iter().filter(|p| app.panel_selected(*p)).collect();
 
@@ -12,11 +16,14 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
         return;
     }
 
-    ui.columns(visible_panels.len(), |columns| {
-        for (col, panel) in columns.iter_mut().zip(visible_panels.iter()) {
-            render_panel_column(col, app, *panel);
-        }
-    });
+    for row in visible_panels.chunks(MAX_COLUMNS_PER_ROW) {
+        ui.columns(row.len(), |columns| {
+            for (col, panel) in columns.iter_mut().zip(row.iter()) {
+                render_panel_column(col, app, *panel);
+            }
+        });
+        ui.add_space(12.0);
+    }
 }
 
 fn render_panel_column(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, panel: Panel) {

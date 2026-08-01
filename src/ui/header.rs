@@ -40,13 +40,18 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
         if unit_system != app.unit_system {
             app.set_unit_system(unit_system);
         }
+    });
 
-        ui.separator();
+    ui.add_space(4.0);
 
+    ui.horizontal_wrapped(|ui| {
         ui.label("Panels:");
-        ui.checkbox(&mut app.show_cbc, Panel::Cbc.label());
-        ui.checkbox(&mut app.show_cmp, Panel::Cmp.label());
-        ui.checkbox(&mut app.show_lipid, Panel::Lipid.label());
+        for panel in Panel::ALL {
+            let mut enabled = app.panel_selected(panel);
+            if ui.checkbox(&mut enabled, panel.label()).changed() {
+                app.set_panel_selected(panel, enabled);
+            }
+        }
     });
 
     ui.add_space(6.0);
