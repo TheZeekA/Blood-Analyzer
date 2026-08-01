@@ -24,7 +24,11 @@ pub fn show(ctx: &egui::Context, app: &mut BloodAnalyzerApp) {
                 let abnormal = session_abnormal_count(app, session);
                 ui.horizontal(|ui| {
                     ui.strong(session.label());
-                    ui.label(format!("{} value(s), {} abnormal", session.values.len(), abnormal));
+                    ui.label(format!(
+                        "{} value(s), {} abnormal",
+                        session.values.len(),
+                        abnormal
+                    ));
                     if ui.button("Load").clicked() {
                         load_index = Some(idx);
                     }
@@ -56,7 +60,9 @@ fn session_abnormal_count(app: &BloodAnalyzerApp, session: &SavedSession) -> usi
         .filter_map(|(id, &value)| reference_data::find(id).map(|param| (param, value)))
         .filter(|(param, value)| {
             let range = settings::effective_range(param, session.sex, &app.range_overrides);
-            analysis::analyze(*value, range, param.critical).status.is_abnormal()
+            analysis::analyze(*value, range, param.critical)
+                .status
+                .is_abnormal()
         })
         .count()
 }

@@ -19,8 +19,10 @@ pub fn show(ctx: &egui::Context, app: &mut BloodAnalyzerApp) {
             }
 
             let sorted = app.history.sorted_indices();
-            let session_labels: Vec<(usize, String)> =
-                sorted.iter().map(|&idx| (idx, app.history.0[idx].label())).collect();
+            let session_labels: Vec<(usize, String)> = sorted
+                .iter()
+                .map(|&idx| (idx, app.history.0[idx].label()))
+                .collect();
 
             ui.horizontal(|ui| {
                 ui.label("Session A:");
@@ -29,11 +31,13 @@ pub fn show(ctx: &egui::Context, app: &mut BloodAnalyzerApp) {
                     .and_then(|i| session_labels.iter().find(|(idx, _)| *idx == i))
                     .map(|(_, l)| l.clone())
                     .unwrap_or_else(|| "Select...".to_string());
-                egui::ComboBox::from_id_salt("compare_a").selected_text(selected).show_ui(ui, |ui| {
-                    for (idx, label) in &session_labels {
-                        ui.selectable_value(&mut app.compare_a, Some(*idx), label.clone());
-                    }
-                });
+                egui::ComboBox::from_id_salt("compare_a")
+                    .selected_text(selected)
+                    .show_ui(ui, |ui| {
+                        for (idx, label) in &session_labels {
+                            ui.selectable_value(&mut app.compare_a, Some(*idx), label.clone());
+                        }
+                    });
             });
             ui.horizontal(|ui| {
                 ui.label("Session B:");
@@ -42,11 +46,13 @@ pub fn show(ctx: &egui::Context, app: &mut BloodAnalyzerApp) {
                     .and_then(|i| session_labels.iter().find(|(idx, _)| *idx == i))
                     .map(|(_, l)| l.clone())
                     .unwrap_or_else(|| "Select...".to_string());
-                egui::ComboBox::from_id_salt("compare_b").selected_text(selected).show_ui(ui, |ui| {
-                    for (idx, label) in &session_labels {
-                        ui.selectable_value(&mut app.compare_b, Some(*idx), label.clone());
-                    }
-                });
+                egui::ComboBox::from_id_salt("compare_b")
+                    .selected_text(selected)
+                    .show_ui(ui, |ui| {
+                        for (idx, label) in &session_labels {
+                            ui.selectable_value(&mut app.compare_b, Some(*idx), label.clone());
+                        }
+                    });
             });
 
             ui.separator();
@@ -66,44 +72,47 @@ fn render_comparison(ui: &mut egui::Ui, app: &BloodAnalyzerApp, a_idx: usize, b_
     let session_b = &app.history.0[b_idx];
     let unit_system = app.unit_system;
 
-    egui::Grid::new("compare_grid").num_columns(4).striped(true).show(ui, |ui| {
-        ui.strong("Marker");
-        ui.strong(session_a.label());
-        ui.strong(session_b.label());
-        ui.strong("Change");
-        ui.end_row();
-
-        for param in reference_data::PARAMETERS {
-            let a_val = session_a.values.get(param.id);
-            let b_val = session_b.values.get(param.id);
-            if a_val.is_none() && b_val.is_none() {
-                continue;
-            }
-
-            ui.label(param.name);
-            render_cell(ui, app, param, a_val.copied(), session_a);
-            render_cell(ui, app, param, b_val.copied(), session_b);
-
-            match (a_val, b_val) {
-                (Some(&a), Some(&b)) => {
-                    let diff_si = b - a;
-                    let arrow = if diff_si.abs() < 1e-9 {
-                        "\u{2192}"
-                    } else if diff_si > 0.0 {
-                        "\u{2191}"
-                    } else {
-                        "\u{2193}"
-                    };
-                    let diff_display = param.si_to_display(diff_si, unit_system).abs();
-                    ui.label(format!("{arrow} {}", format_display_value(diff_display)));
-                }
-                _ => {
-                    ui.label("\u{2014}");
-                }
-            }
+    egui::Grid::new("compare_grid")
+        .num_columns(4)
+        .striped(true)
+        .show(ui, |ui| {
+            ui.strong("Marker");
+            ui.strong(session_a.label());
+            ui.strong(session_b.label());
+            ui.strong("Change");
             ui.end_row();
-        }
-    });
+
+            for param in reference_data::PARAMETERS {
+                let a_val = session_a.values.get(param.id);
+                let b_val = session_b.values.get(param.id);
+                if a_val.is_none() && b_val.is_none() {
+                    continue;
+                }
+
+                ui.label(param.name);
+                render_cell(ui, app, param, a_val.copied(), session_a);
+                render_cell(ui, app, param, b_val.copied(), session_b);
+
+                match (a_val, b_val) {
+                    (Some(&a), Some(&b)) => {
+                        let diff_si = b - a;
+                        let arrow = if diff_si.abs() < 1e-9 {
+                            "\u{2192}"
+                        } else if diff_si > 0.0 {
+                            "\u{2191}"
+                        } else {
+                            "\u{2193}"
+                        };
+                        let diff_display = param.si_to_display(diff_si, unit_system).abs();
+                        ui.label(format!("{arrow} {}", format_display_value(diff_display)));
+                    }
+                    _ => {
+                        ui.label("\u{2014}");
+                    }
+                }
+                ui.end_row();
+            }
+        });
 }
 
 fn render_cell(
@@ -120,7 +129,11 @@ fn render_cell(
             let display = param.si_to_display(si_value, app.unit_system);
             ui.colored_label(
                 super::status_color(result.status),
-                format!("{} {}", format_display_value(display), param.unit_for(app.unit_system)),
+                format!(
+                    "{} {}",
+                    format_display_value(display),
+                    param.unit_for(app.unit_system)
+                ),
             );
         }
         None => {

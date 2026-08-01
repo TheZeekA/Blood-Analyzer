@@ -2,10 +2,10 @@ use std::path::Path;
 
 use genpdf::elements::{Break, Paragraph};
 use genpdf::style::{Color, Style, StyledString};
-use genpdf::{fonts, Document};
+use genpdf::{Document, fonts};
 
 use crate::app::BloodAnalyzerApp;
-use crate::model::{format_display_value, Panel, Status};
+use crate::model::{Panel, Status, format_display_value};
 use crate::reference_data;
 
 /// Generates the PDF report and writes it to `path`. Uses the system Arial
@@ -63,7 +63,10 @@ pub fn write_report(app: &BloodAnalyzerApp, path: &Path) -> Result<(), String> {
             }
             params.sort_by_key(|p| p.name);
 
-            doc.push(Paragraph::new(StyledString::new(panel.label(), Style::new().bold().with_font_size(14))));
+            doc.push(Paragraph::new(StyledString::new(
+                panel.label(),
+                Style::new().bold().with_font_size(14),
+            )));
             doc.push(Break::new(0.5));
 
             for param in params {

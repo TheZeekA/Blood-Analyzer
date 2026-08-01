@@ -12,7 +12,11 @@ pub struct RangeOverrides(pub HashMap<String, RangeSpec>);
 impl RangeOverrides {
     fn file_path() -> Option<PathBuf> {
         let appdata = std::env::var_os("APPDATA")?;
-        Some(PathBuf::from(appdata).join("BloodAnalyzer").join("range_overrides.json"))
+        Some(
+            PathBuf::from(appdata)
+                .join("BloodAnalyzer")
+                .join("range_overrides.json"),
+        )
     }
 
     pub fn load() -> Self {
@@ -23,7 +27,9 @@ impl RangeOverrides {
     }
 
     pub fn save(&self) {
-        let Some(path) = Self::file_path() else { return };
+        let Some(path) = Self::file_path() else {
+            return;
+        };
         if let Some(dir) = path.parent() {
             let _ = std::fs::create_dir_all(dir);
         }
@@ -69,7 +75,10 @@ mod tests {
             name: "Test",
             unit: "unit",
             panel: Panel::Cmp,
-            range: RangeSpec::Fixed { low: 1.0, high: 2.0 },
+            range: RangeSpec::Fixed {
+                low: 1.0,
+                high: 2.0,
+            },
             critical: None,
             description: "",
             high_meaning: "",
@@ -93,7 +102,13 @@ mod tests {
     fn override_takes_precedence() {
         let param = test_param();
         let mut overrides = RangeOverrides::default();
-        overrides.set("test", RangeSpec::Fixed { low: 5.0, high: 9.0 });
+        overrides.set(
+            "test",
+            RangeSpec::Fixed {
+                low: 5.0,
+                high: 9.0,
+            },
+        );
         assert_eq!(effective_range(&param, Sex::Male, &overrides), (5.0, 9.0));
     }
 
@@ -101,7 +116,13 @@ mod tests {
     fn reset_removes_override() {
         let param = test_param();
         let mut overrides = RangeOverrides::default();
-        overrides.set("test", RangeSpec::Fixed { low: 5.0, high: 9.0 });
+        overrides.set(
+            "test",
+            RangeSpec::Fixed {
+                low: 5.0,
+                high: 9.0,
+            },
+        );
         overrides.reset("test");
         assert_eq!(effective_range(&param, Sex::Male, &overrides), (1.0, 2.0));
     }
@@ -109,10 +130,19 @@ mod tests {
     #[test]
     fn serde_roundtrip() {
         let mut overrides = RangeOverrides::default();
-        overrides.set("wbc", RangeSpec::Fixed { low: 3.5, high: 10.5 });
+        overrides.set(
+            "wbc",
+            RangeSpec::Fixed {
+                low: 3.5,
+                high: 10.5,
+            },
+        );
         overrides.set(
             "hemoglobin",
-            RangeSpec::BySex { male: (130.0, 170.0), female: (115.0, 150.0) },
+            RangeSpec::BySex {
+                male: (130.0, 170.0),
+                female: (115.0, 150.0),
+            },
         );
         let json = serde_json::to_string(&overrides).unwrap();
         let restored: RangeOverrides = serde_json::from_str(&json).unwrap();

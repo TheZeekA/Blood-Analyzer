@@ -78,8 +78,14 @@ impl UnitSystem {
 /// A reference range, either the same for everyone or split by sex.
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum RangeSpec {
-    Fixed { low: f64, high: f64 },
-    BySex { male: (f64, f64), female: (f64, f64) },
+    Fixed {
+        low: f64,
+        high: f64,
+    },
+    BySex {
+        male: (f64, f64),
+        female: (f64, f64),
+    },
 }
 
 impl RangeSpec {
