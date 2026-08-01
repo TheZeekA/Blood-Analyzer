@@ -4,9 +4,16 @@ pub fn find(id: &str) -> Option<&'static Parameter> {
     PARAMETERS.iter().find(|p| p.id == id)
 }
 
+const BLOOD_DIFFERENTIAL_URL: &str = "https://medlineplus.gov/lab-tests/blood-differential/";
+const RBC_INDICES_URL: &str = "https://medlineplus.gov/lab-tests/red-blood-cell-rbc-indices/";
+const CHOLESTEROL_URL: &str = "https://medlineplus.gov/lab-tests/cholesterol-levels/";
+
 /// Adult reference ranges, SI units. General population ranges compiled from
 /// standard clinical chemistry/hematology references. Local lab ranges may
 /// differ slightly by analyzer/method and should be preferred when available.
+/// `source_url` points to the MedlinePlus (NIH/National Library of Medicine)
+/// page for that marker, used both as the cited source and as the in-app
+/// "official guidance" link.
 pub const PARAMETERS: &[Parameter] = &[
     // ---------------- CBC ----------------
     Parameter {
@@ -19,6 +26,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Total count of white blood cells, the immune system's primary defenders against infection.",
         high_meaning: "May be associated with bacterial infection, inflammation, tissue damage, stress response, corticosteroid use, or blood cancers such as leukemia.",
         low_meaning: "May be associated with viral infections, bone marrow suppression (e.g. chemotherapy, radiation), autoimmune disease, or severe/overwhelming infection outpacing production.",
+        us_unit: "×10³/µL",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/white-blood-count-wbc/",
+        suggestion_high: Some("If related to acute illness or stress, rest, hydration, and allowing the body to recover are commonly recommended supportive measures (CDC)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "rbc",
@@ -30,6 +42,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Total count of red blood cells, which carry oxygen from the lungs to body tissues.",
         high_meaning: "May be associated with dehydration, chronic lung/heart disease causing low oxygen, smoking, living at high altitude, or polycythemia vera.",
         low_meaning: "May be associated with anemia from blood loss, iron/B12/folate deficiency, chronic kidney disease, or bone marrow disorders.",
+        us_unit: "×10⁶/µL",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/red-blood-cell-rbc-count/",
+        suggestion_high: Some("Staying well hydrated and avoiding tobacco use are commonly associated with healthier red blood cell levels (CDC)."),
+        suggestion_low: Some("Eating iron-rich foods (leafy greens, lean meat, legumes) alongside vitamin C to aid iron absorption is commonly recommended for mild, diet-related anemia (NIH)."),
     },
     Parameter {
         id: "hemoglobin",
@@ -41,6 +58,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "The oxygen-carrying protein inside red blood cells; a core measure of anemia severity.",
         high_meaning: "May be associated with dehydration, smoking, chronic hypoxia (e.g. COPD, sleep apnea), or polycythemia vera. Very high levels raise clotting risk.",
         low_meaning: "Indicates anemia; may be associated with blood loss, iron/B12/folate deficiency, chronic disease, or bone marrow failure. Very low levels may require transfusion.",
+        us_unit: "g/dL",
+        si_to_us_factor: 0.1,
+        source_url: "https://medlineplus.gov/lab-tests/hemoglobin-test/",
+        suggestion_high: Some("Staying well hydrated and avoiding tobacco use are commonly associated with healthier hemoglobin levels (CDC)."),
+        suggestion_low: Some("Eating iron-rich foods (leafy greens, lean meat, legumes) alongside vitamin C to aid iron absorption is commonly recommended for mild, diet-related anemia (NIH)."),
     },
     Parameter {
         id: "hematocrit",
@@ -52,6 +74,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "The percentage of blood volume made up of red blood cells; tracks closely with hemoglobin and RBC count.",
         high_meaning: "May be associated with dehydration, chronic hypoxia, smoking, or polycythemia vera.",
         low_meaning: "May be associated with anemia, recent blood loss, overhydration, or nutritional deficiency.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/hematocrit-test/",
+        suggestion_high: Some("Staying well hydrated and avoiding tobacco use are commonly associated with healthier hematocrit levels (CDC)."),
+        suggestion_low: Some("Eating iron-rich foods alongside vitamin C to aid absorption is commonly recommended for mild, diet-related anemia (NIH)."),
     },
     Parameter {
         id: "mcv",
@@ -63,6 +90,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Average size of individual red blood cells; used to classify anemia as microcytic, normocytic, or macrocytic.",
         high_meaning: "May be associated with B12 or folate deficiency, alcohol use, liver disease, or hypothyroidism (macrocytic anemia).",
         low_meaning: "May be associated with iron deficiency or thalassemia (microcytic anemia).",
+        us_unit: "fL",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/mcv-mean-corpuscular-volume/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "mch",
@@ -74,6 +106,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Average amount of hemoglobin per red blood cell.",
         high_meaning: "May be associated with macrocytic anemia (e.g. B12/folate deficiency).",
         low_meaning: "May be associated with iron deficiency anemia or thalassemia.",
+        us_unit: "pg",
+        si_to_us_factor: 1.0,
+        source_url: RBC_INDICES_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "mchc",
@@ -85,6 +122,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Concentration of hemoglobin within red blood cells, relative to cell volume.",
         high_meaning: "May be associated with hereditary spherocytosis or severe dehydration/hemoconcentration.",
         low_meaning: "May be associated with iron deficiency anemia or thalassemia.",
+        us_unit: "g/dL",
+        si_to_us_factor: 0.1,
+        source_url: RBC_INDICES_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "rdw",
@@ -96,6 +138,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Measures variation in red blood cell size; helps distinguish causes of anemia when combined with MCV.",
         high_meaning: "May be associated with iron/B12/folate deficiency, mixed anemia types, or recent blood transfusion.",
         low_meaning: "Not typically clinically significant on its own.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/rdw-red-cell-distribution-width/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "platelets",
@@ -107,6 +154,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Cell fragments essential for blood clotting.",
         high_meaning: "May be associated with inflammation, infection, iron deficiency, or a myeloproliferative disorder. Raises clotting risk at very high levels.",
         low_meaning: "May be associated with bone marrow suppression, autoimmune destruction, liver disease, or certain infections. Raises bleeding risk at very low levels.",
+        us_unit: "×10³/µL",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/platelet-tests/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "neutrophils",
@@ -118,6 +170,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Most abundant white blood cell type; first responders against bacterial infection.",
         high_meaning: "May be associated with acute bacterial infection, inflammation, stress, or corticosteroid use.",
         low_meaning: "May be associated with viral infection, bone marrow suppression, or certain medications; increases infection risk when severe.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: BLOOD_DIFFERENTIAL_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "lymphocytes",
@@ -129,6 +186,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "White blood cells responsible for viral defense and adaptive immunity (T cells, B cells).",
         high_meaning: "May be associated with viral infection, chronic lymphocytic leukemia, or certain chronic infections.",
         low_meaning: "May be associated with acute stress, corticosteroid use, HIV/AIDS, or autoimmune disease.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: BLOOD_DIFFERENTIAL_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "monocytes",
@@ -140,6 +202,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "White blood cells that mature into macrophages, clearing pathogens and dead cells.",
         high_meaning: "May be associated with chronic infection, inflammatory disease, or recovery from acute infection.",
         low_meaning: "Not typically clinically significant on its own.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: BLOOD_DIFFERENTIAL_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "eosinophils",
@@ -151,6 +218,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "White blood cells involved in allergic response and defense against parasites.",
         high_meaning: "May be associated with allergies, asthma, parasitic infection, or certain drug reactions.",
         low_meaning: "Not typically clinically significant on its own.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: BLOOD_DIFFERENTIAL_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "basophils",
@@ -162,6 +234,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Least common white blood cell type, involved in allergic and inflammatory responses.",
         high_meaning: "May be associated with allergic reactions, chronic inflammation, or certain myeloproliferative disorders.",
         low_meaning: "Not typically clinically significant on its own.",
+        us_unit: "%",
+        si_to_us_factor: 1.0,
+        source_url: BLOOD_DIFFERENTIAL_URL,
+        suggestion_high: None,
+        suggestion_low: None,
     },
     // ---------------- CMP ----------------
     Parameter {
@@ -174,6 +251,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Blood sugar level; central to diagnosing and monitoring diabetes.",
         high_meaning: "May be associated with diabetes, prediabetes, acute stress/illness, or corticosteroid use. Very high levels raise risk of DKA/HHS.",
         low_meaning: "May be associated with excess insulin/diabetes medication, prolonged fasting, alcohol use, or (rarely) an insulin-producing tumor. Severe hypoglycemia is a medical emergency.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 18.0182,
+        source_url: "https://medlineplus.gov/lab-tests/blood-glucose-test/",
+        suggestion_high: Some("Regular physical activity, reducing added sugar and refined carbohydrate intake, and maintaining a healthy weight are commonly recommended for supporting healthy blood sugar levels (ADA/CDC)."),
+        suggestion_low: Some("Eating regular, balanced meals and avoiding prolonged fasting can help prevent low blood sugar episodes (ADA)."),
     },
     Parameter {
         id: "urea",
@@ -185,6 +267,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Waste product of protein metabolism, filtered by the kidneys; reflects kidney function and hydration/protein intake.",
         high_meaning: "May be associated with dehydration, kidney impairment, high protein intake, or gastrointestinal bleeding.",
         low_meaning: "May be associated with overhydration, low protein intake, or severe liver disease.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 2.8,
+        source_url: "https://medlineplus.gov/lab-tests/bun-blood-urea-nitrogen/",
+        suggestion_high: Some("Staying well hydrated is commonly recommended, since dehydration is a common contributor to an elevated BUN (NIH)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "creatinine",
@@ -196,6 +283,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Waste product of muscle metabolism, filtered by the kidneys; the primary marker of kidney function.",
         high_meaning: "May be associated with acute or chronic kidney disease, dehydration, urinary obstruction, or high muscle mass.",
         low_meaning: "May be associated with low muscle mass, pregnancy, or malnutrition; rarely clinically significant alone.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 0.011312,
+        source_url: "https://medlineplus.gov/lab-tests/creatinine-test/",
+        suggestion_high: Some("Staying well hydrated and avoiding excessive protein or creatine-supplement intake are commonly suggested general measures (NIH)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "sodium",
@@ -207,6 +299,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Key electrolyte regulating fluid balance, nerve, and muscle function.",
         high_meaning: "May be associated with dehydration, excess salt intake, diabetes insipidus, or certain medications. Severe cases risk confusion/seizure.",
         low_meaning: "May be associated with overhydration, heart/liver/kidney failure, SIADH, or diuretic use. Severe cases risk confusion/seizure.",
+        us_unit: "mEq/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/sodium-blood-test/",
+        suggestion_high: Some("Reducing dietary sodium intake and staying well hydrated are commonly recommended (AHA)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "potassium",
@@ -218,6 +315,13 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Key electrolyte critical for normal heart rhythm and muscle function.",
         high_meaning: "May be associated with kidney impairment, certain medications (e.g. ACE inhibitors, potassium-sparing diuretics), or tissue damage. Severe cases risk dangerous cardiac arrhythmia.",
         low_meaning: "May be associated with diuretic use, vomiting/diarrhea, or inadequate intake. Severe cases risk dangerous cardiac arrhythmia.",
+        us_unit: "mEq/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/potassium-blood-test/",
+        // Abnormal potassium carries meaningful cardiac risk and is often medication/kidney-driven;
+        // deliberately no lifestyle suggestion here — this one should go to a clinician, not a diet tip.
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "chloride",
@@ -229,6 +333,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Electrolyte that helps maintain fluid balance and acid-base status, usually tracking with sodium.",
         high_meaning: "May be associated with dehydration or metabolic acidosis.",
         low_meaning: "May be associated with vomiting, overhydration, or metabolic alkalosis.",
+        us_unit: "mEq/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/chloride-blood-test/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "bicarbonate",
@@ -240,6 +349,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Reflects the body's acid-base (pH) balance, largely controlled by the kidneys and lungs.",
         high_meaning: "May be associated with metabolic alkalosis or chronic respiratory acidosis (compensation).",
         low_meaning: "May be associated with metabolic acidosis, e.g. from kidney disease, diabetic ketoacidosis, or severe diarrhea.",
+        us_unit: "mEq/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/carbon-dioxide-co2-in-blood/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "calcium",
@@ -251,6 +365,12 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Essential mineral for bone health, nerve signaling, muscle contraction, and blood clotting.",
         high_meaning: "May be associated with hyperparathyroidism, certain cancers, excess vitamin D, or prolonged immobilization.",
         low_meaning: "May be associated with vitamin D deficiency, hypoparathyroidism, kidney disease, or low albumin.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 4.008,
+        source_url: "https://medlineplus.gov/lab-tests/calcium-blood-test/",
+        // High calcium is often driven by parathyroid/malignancy causes best left to a clinician.
+        suggestion_high: None,
+        suggestion_low: Some("Adequate dietary calcium and vitamin D (from food, sunlight, or supplementation as advised by a clinician) are commonly recommended (NIH)."),
     },
     Parameter {
         id: "total_protein",
@@ -262,6 +382,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Combined measure of all blood proteins, mainly albumin and globulins; reflects nutrition, liver, and kidney status.",
         high_meaning: "May be associated with chronic inflammation, dehydration, or certain blood disorders (e.g. multiple myeloma).",
         low_meaning: "May be associated with malnutrition, liver disease, kidney protein loss, or malabsorption.",
+        us_unit: "g/dL",
+        si_to_us_factor: 0.1,
+        source_url: "https://medlineplus.gov/lab-tests/total-protein-and-albumin-globulin-a-g-ratio/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "albumin",
@@ -273,6 +398,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Main protein made by the liver; maintains fluid balance and transports substances in the blood.",
         high_meaning: "Usually reflects dehydration rather than a disease process.",
         low_meaning: "May be associated with liver disease, malnutrition, chronic inflammation, or kidney/GI protein loss.",
+        us_unit: "g/dL",
+        si_to_us_factor: 0.1,
+        source_url: "https://medlineplus.gov/lab-tests/albumin-blood-test/",
+        suggestion_high: None,
+        suggestion_low: Some("Adequate dietary protein intake is commonly recommended to support healthy albumin levels (NIH)."),
     },
     Parameter {
         id: "total_bilirubin",
@@ -284,6 +414,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Breakdown product of red blood cells, processed by the liver; elevated levels cause jaundice.",
         high_meaning: "May be associated with liver disease, bile duct obstruction, or increased red blood cell breakdown (hemolysis).",
         low_meaning: "Not typically clinically significant.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 0.05848,
+        source_url: "https://medlineplus.gov/lab-tests/bilirubin-blood-test/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "alp",
@@ -295,6 +430,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Enzyme found in liver and bone; used to assess liver/bile duct disease and bone turnover.",
         high_meaning: "May be associated with bile duct obstruction, liver disease, bone disorders, or (normally) active bone growth in adolescents.",
         low_meaning: "May be associated with malnutrition, hypothyroidism, or certain genetic conditions.",
+        us_unit: "U/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/alkaline-phosphatase/",
+        suggestion_high: None,
+        suggestion_low: None,
     },
     Parameter {
         id: "ast",
@@ -306,6 +446,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Liver enzyme also found in heart and muscle tissue; elevated with cell damage in those organs.",
         high_meaning: "May be associated with liver injury (e.g. alcohol, fatty liver, hepatitis), muscle injury, or heart attack.",
         low_meaning: "Not typically clinically significant.",
+        us_unit: "U/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/ast-test/",
+        suggestion_high: Some("Limiting alcohol intake and maintaining a healthy weight are commonly associated with supporting healthy liver enzyme levels (CDC/NIH)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "alt",
@@ -317,6 +462,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Liver enzyme more specific to the liver than AST; a key marker of liver cell damage.",
         high_meaning: "May be associated with fatty liver disease, viral hepatitis, alcohol use, or medication-induced liver injury.",
         low_meaning: "Not typically clinically significant.",
+        us_unit: "U/L",
+        si_to_us_factor: 1.0,
+        source_url: "https://medlineplus.gov/lab-tests/alt-blood-test/",
+        suggestion_high: Some("Limiting alcohol intake and maintaining a healthy weight are commonly associated with supporting healthy liver enzyme levels (CDC/NIH)."),
+        suggestion_low: None,
     },
     // ---------------- Lipid Panel ----------------
     Parameter {
@@ -329,6 +479,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "Combined measure of all cholesterol carried in the blood (LDL + HDL + a fraction of triglycerides).",
         high_meaning: "May be associated with increased cardiovascular disease risk; influenced by diet, genetics, weight, and activity level.",
         low_meaning: "Not typically a clinical concern; very low levels occasionally relate to liver disease, malnutrition, or hyperthyroidism.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 38.67,
+        source_url: CHOLESTEROL_URL,
+        suggestion_high: Some("Reducing saturated fat intake, increasing physical activity, and maintaining a healthy weight are commonly recommended to help lower cholesterol (AHA)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "ldl",
@@ -340,6 +495,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "\"Bad\" cholesterol; carries cholesterol into artery walls and is a key driver of atherosclerosis.",
         high_meaning: "Associated with increased risk of atherosclerosis, heart attack, and stroke; target thresholds are lower for those with existing cardiovascular disease or diabetes.",
         low_meaning: "Not typically a clinical concern.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 38.67,
+        source_url: CHOLESTEROL_URL,
+        suggestion_high: Some("Reducing saturated fat intake, increasing physical activity, and maintaining a healthy weight are commonly recommended to help lower LDL cholesterol (AHA)."),
+        suggestion_low: None,
     },
     Parameter {
         id: "hdl",
@@ -351,6 +511,11 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "\"Good\" cholesterol; helps remove excess cholesterol from the bloodstream. Higher is generally protective.",
         high_meaning: "Generally protective against cardiovascular disease; very high levels are uncommon and not typically concerning.",
         low_meaning: "Associated with increased cardiovascular disease risk; may relate to smoking, obesity, sedentary lifestyle, or type 2 diabetes.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 38.67,
+        source_url: CHOLESTEROL_URL,
+        suggestion_high: None,
+        suggestion_low: Some("Regular aerobic exercise and avoiding tobacco use are commonly associated with higher HDL levels (AHA)."),
     },
     Parameter {
         id: "triglycerides",
@@ -362,5 +527,10 @@ pub const PARAMETERS: &[Parameter] = &[
         description: "A type of fat in the blood, mainly from dietary fat and excess calories; a cardiovascular risk factor.",
         high_meaning: "May be associated with obesity, poorly controlled diabetes, excess alcohol/sugar intake, or genetic lipid disorders. Very high levels raise risk of pancreatitis.",
         low_meaning: "Not typically a clinical concern.",
+        us_unit: "mg/dL",
+        si_to_us_factor: 88.57,
+        source_url: "https://medlineplus.gov/lab-tests/triglycerides-test/",
+        suggestion_high: Some("Limiting added sugars, alcohol, and refined carbohydrates, along with regular physical activity, are commonly recommended to help lower triglycerides (AHA)."),
+        suggestion_low: None,
     },
 ];
