@@ -17,7 +17,9 @@ fn main() -> eframe::Result<()> {
     let icon = eframe::icon_data::from_png_bytes(ICON_PNG).expect("failed to decode app icon");
 
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([1500.0, 950.0]).with_icon(icon),
+        viewport: egui::ViewportBuilder::default()
+            .with_inner_size([1500.0, 950.0])
+            .with_icon(icon),
         ..Default::default()
     };
 

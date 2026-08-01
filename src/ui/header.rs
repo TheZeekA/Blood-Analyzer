@@ -24,9 +24,10 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
             // egui's texture minification isn't mipmapped, so shrinking a
             // 1024px source down to ~32px on the fly aliased badly and
             // looked pixelated; downsampling once in advance avoids that.
-            let logo = egui::Image::new(egui::include_image!("../../images/bloodtestlogo_small.png"))
-                .fit_to_exact_size(egui::Vec2::splat(32.0))
-                .sense(egui::Sense::click());
+            let logo =
+                egui::Image::new(egui::include_image!("../../images/bloodtestlogo_small.png"))
+                    .fit_to_exact_size(egui::Vec2::splat(32.0))
+                    .sense(egui::Sense::click());
             if ui.add(logo).on_hover_text("About Blood Analyzer").clicked() {
                 app.show_about_window = true;
             }
@@ -86,13 +87,19 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
         }
 
         if app.analyzed {
-            let abnormal = app.results.values().filter(|r| r.status.is_abnormal()).count();
+            let abnormal = app
+                .results
+                .values()
+                .filter(|r| r.status.is_abnormal())
+                .count();
             ui.separator();
             if abnormal > 0 {
                 ui.label(
-                    RichText::new(format!("{abnormal} result(s) outside the standard reference range."))
-                        .color(Color32::from_rgb(210, 140, 20))
-                        .strong(),
+                    RichText::new(format!(
+                        "{abnormal} result(s) outside the standard reference range."
+                    ))
+                    .color(Color32::from_rgb(210, 140, 20))
+                    .strong(),
                 );
             } else if !app.results.is_empty() {
                 ui.label(

@@ -15,10 +15,16 @@ pub fn show(ctx: &egui::Context, app: &mut BloodAnalyzerApp) {
             ui.add_space(6.0);
             ui.horizontal(|ui| {
                 ui.label("Email:");
-                ui.hyperlink_to("teddyjones@outlook.co.nz", "mailto:teddyjones@outlook.co.nz");
+                ui.hyperlink_to(
+                    "teddyjones@outlook.co.nz",
+                    "mailto:teddyjones@outlook.co.nz",
+                );
             });
             ui.add_space(6.0);
-            ui.hyperlink_to("GitHub Repository", "https://github.com/TheZeekA/Blood-Analyzer");
+            ui.hyperlink_to(
+                "GitHub Repository",
+                "https://github.com/TheZeekA/Blood-Analyzer",
+            );
             ui.add_space(4.0);
         });
 

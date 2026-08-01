@@ -96,12 +96,16 @@ impl BloodAnalyzerApp {
             return;
         }
         for param in reference_data::PARAMETERS {
-            let Some(text) = self.inputs.get(param.id) else { continue };
+            let Some(text) = self.inputs.get(param.id) else {
+                continue;
+            };
             let trimmed = text.trim();
             if trimmed.is_empty() {
                 continue;
             }
-            let Ok(old_value) = trimmed.parse::<f64>() else { continue };
+            let Ok(old_value) = trimmed.parse::<f64>() else {
+                continue;
+            };
             let si_value = param.display_to_si(old_value, self.unit_system);
             let new_value = param.si_to_display(si_value, new_system);
             self.inputs.insert(param.id, format_value(new_value));
@@ -115,7 +119,9 @@ impl BloodAnalyzerApp {
     pub fn save_current_session(&mut self) {
         let mut values = HashMap::new();
         for param in reference_data::PARAMETERS {
-            let Some(text) = self.inputs.get(param.id) else { continue };
+            let Some(text) = self.inputs.get(param.id) else {
+                continue;
+            };
             let trimmed = text.trim();
             if trimmed.is_empty() {
                 continue;
@@ -126,16 +132,23 @@ impl BloodAnalyzerApp {
             }
         }
         if values.is_empty() {
-            self.status_message = Some("Nothing to save — enter at least one value first.".to_string());
+            self.status_message =
+                Some("Nothing to save — enter at least one value first.".to_string());
             return;
         }
-        let session = SavedSession { timestamp: Local::now(), sex: self.sex, values };
+        let session = SavedSession {
+            timestamp: Local::now(),
+            sex: self.sex,
+            values,
+        };
         self.history.add(session);
         self.status_message = Some("Saved to history.".to_string());
     }
 
     pub fn load_session(&mut self, index: usize) {
-        let Some(session) = self.history.0.get(index) else { return };
+        let Some(session) = self.history.0.get(index) else {
+            return;
+        };
         self.sex = session.sex;
         self.inputs.clear();
         for (id, si_value) in &session.values {

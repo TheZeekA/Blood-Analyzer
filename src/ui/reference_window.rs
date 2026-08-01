@@ -1,7 +1,7 @@
 use egui::Color32;
 
 use crate::app::BloodAnalyzerApp;
-use crate::model::{format_display_value, Parameter, RangeSpec, Sex, UnitSystem};
+use crate::model::{Parameter, RangeSpec, Sex, UnitSystem, format_display_value};
 use crate::reference_data;
 use crate::settings;
 
@@ -47,7 +47,10 @@ pub fn show(ctx: &egui::Context, app: &mut BloodAnalyzerApp) {
 
                     if is_overridden {
                         ui.horizontal(|ui| {
-                            ui.colored_label(Color32::from_rgb(210, 140, 20), "Modified from default");
+                            ui.colored_label(
+                                Color32::from_rgb(210, 140, 20),
+                                "Modified from default",
+                            );
                             if ui.small_button("Reset").clicked() {
                                 app.range_overrides.reset(param.id);
                                 app.range_overrides.save();
@@ -68,12 +71,20 @@ fn text_field(
     key: &str,
     default_text: impl FnOnce() -> String,
 ) -> (String, bool) {
-    let buf = app.reference_edit_buffers.entry(key.to_string()).or_insert_with(default_text);
+    let buf = app
+        .reference_edit_buffers
+        .entry(key.to_string())
+        .or_insert_with(default_text);
     let response = ui.add(egui::TextEdit::singleline(buf).desired_width(55.0));
     (buf.clone(), response.changed())
 }
 
-fn render_fixed_row(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, param: &Parameter, unit_system: UnitSystem) {
+fn render_fixed_row(
+    ui: &mut egui::Ui,
+    app: &mut BloodAnalyzerApp,
+    param: &Parameter,
+    unit_system: UnitSystem,
+) {
     let effective = settings::effective_range(param, Sex::Male, &app.range_overrides);
     let low_default = format_display_value(param.si_to_display(effective.0, unit_system));
     let high_default = format_display_value(param.si_to_display(effective.1, unit_system));
@@ -86,17 +97,31 @@ fn render_fixed_row(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, param: &Param
     let (high_text, changed_high) = text_field(ui, app, &high_key, || high_default);
     ui.label(param.unit_for(unit_system));
 
-    if changed_low || changed_high {
-        if let (Ok(low_disp), Ok(high_disp)) = (low_text.trim().parse::<f64>(), high_text.trim().parse::<f64>()) {
-            let low_si = param.display_to_si(low_disp, unit_system);
-            let high_si = param.display_to_si(high_disp, unit_system);
-            app.range_overrides.set(param.id, RangeSpec::Fixed { low: low_si, high: high_si });
-            app.range_overrides.save();
-        }
+    if (changed_low || changed_high)
+        && let (Ok(low_disp), Ok(high_disp)) = (
+            low_text.trim().parse::<f64>(),
+            high_text.trim().parse::<f64>(),
+        )
+    {
+        let low_si = param.display_to_si(low_disp, unit_system);
+        let high_si = param.display_to_si(high_disp, unit_system);
+        app.range_overrides.set(
+            param.id,
+            RangeSpec::Fixed {
+                low: low_si,
+                high: high_si,
+            },
+        );
+        app.range_overrides.save();
     }
 }
 
-fn render_by_sex_rows(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, param: &Parameter, unit_system: UnitSystem) {
+fn render_by_sex_rows(
+    ui: &mut egui::Ui,
+    app: &mut BloodAnalyzerApp,
+    param: &Parameter,
+    unit_system: UnitSystem,
+) {
     for (sex, label) in [(Sex::Male, "Male"), (Sex::Female, "Female")] {
         ui.horizontal(|ui| {
             ui.label(label);
@@ -112,21 +137,32 @@ fn render_by_sex_rows(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, param: &Par
             let (high_text, changed_high) = text_field(ui, app, &high_key, || high_default);
             ui.label(param.unit_for(unit_system));
 
-            if changed_low || changed_high {
-                if let (Ok(low_disp), Ok(high_disp)) =
-                    (low_text.trim().parse::<f64>(), high_text.trim().parse::<f64>())
-                {
-                    let low_si = param.display_to_si(low_disp, unit_system);
-                    let high_si = param.display_to_si(high_disp, unit_system);
-                    let other_sex = if sex == Sex::Male { Sex::Female } else { Sex::Male };
-                    let other_range = settings::effective_range(param, other_sex, &app.range_overrides);
-                    let new_range = match sex {
-                        Sex::Male => RangeSpec::BySex { male: (low_si, high_si), female: other_range },
-                        Sex::Female => RangeSpec::BySex { male: other_range, female: (low_si, high_si) },
-                    };
-                    app.range_overrides.set(param.id, new_range);
-                    app.range_overrides.save();
-                }
+            if (changed_low || changed_high)
+                && let (Ok(low_disp), Ok(high_disp)) = (
+                    low_text.trim().parse::<f64>(),
+                    high_text.trim().parse::<f64>(),
+                )
+            {
+                let low_si = param.display_to_si(low_disp, unit_system);
+                let high_si = param.display_to_si(high_disp, unit_system);
+                let other_sex = if sex == Sex::Male {
+                    Sex::Female
+                } else {
+                    Sex::Male
+                };
+                let other_range = settings::effective_range(param, other_sex, &app.range_overrides);
+                let new_range = match sex {
+                    Sex::Male => RangeSpec::BySex {
+                        male: (low_si, high_si),
+                        female: other_range,
+                    },
+                    Sex::Female => RangeSpec::BySex {
+                        male: other_range,
+                        female: (low_si, high_si),
+                    },
+                };
+                app.range_overrides.set(param.id, new_range);
+                app.range_overrides.save();
             }
         });
     }
@@ -134,5 +170,6 @@ fn render_by_sex_rows(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp, param: &Par
 
 fn remove_buffers(app: &mut BloodAnalyzerApp, param_id: &str) {
     let prefix = format!("{param_id}_");
-    app.reference_edit_buffers.retain(|k, _| !k.starts_with(&prefix));
+    app.reference_edit_buffers
+        .retain(|k, _| !k.starts_with(&prefix));
 }

@@ -26,7 +26,11 @@ pub struct History(pub Vec<SavedSession>);
 impl History {
     fn file_path() -> Option<PathBuf> {
         let appdata = std::env::var_os("APPDATA")?;
-        Some(PathBuf::from(appdata).join("BloodAnalyzer").join("history.json"))
+        Some(
+            PathBuf::from(appdata)
+                .join("BloodAnalyzer")
+                .join("history.json"),
+        )
     }
 
     pub fn load() -> Self {
@@ -37,7 +41,9 @@ impl History {
     }
 
     pub fn save(&self) {
-        let Some(path) = Self::file_path() else { return };
+        let Some(path) = Self::file_path() else {
+            return;
+        };
         if let Some(dir) = path.parent() {
             let _ = std::fs::create_dir_all(dir);
         }
@@ -75,7 +81,11 @@ mod tests {
         let mut values = HashMap::new();
         values.insert("wbc".to_string(), 7.5);
         values.insert("glucose".to_string(), 5.1);
-        let session = SavedSession { timestamp: Local::now(), sex: Sex::Female, values };
+        let session = SavedSession {
+            timestamp: Local::now(),
+            sex: Sex::Female,
+            values,
+        };
         let history = History(vec![session]);
 
         let json = serde_json::to_string(&history).unwrap();
