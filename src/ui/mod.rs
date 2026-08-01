@@ -1,3 +1,4 @@
+pub mod about_window;
 pub mod compare_window;
 pub mod entry_form;
 pub mod header;

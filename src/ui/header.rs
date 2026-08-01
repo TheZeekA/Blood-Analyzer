@@ -5,24 +5,18 @@ use crate::model::{Panel, Sex, Status, UnitSystem};
 
 pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
     ui.add_space(6.0);
-    ui.heading("Blood Analyzer");
 
-    egui::Frame::new()
-        .fill(Color32::from_rgb(90, 60, 10))
-        .inner_margin(egui::Margin::same(8))
-        .corner_radius(4.0)
-        .show(ui, |ui| {
-            ui.label(
-                RichText::new(
-                    "Educational reference tool only \u{2014} not a substitute for professional \
-                     medical diagnosis or advice. Reference ranges are general adult values and \
-                     may differ from your lab's own reference ranges; always confirm against the \
-                     range printed on the lab report.",
-                )
-                .color(Color32::WHITE)
-                .small(),
-            );
+    ui.horizontal(|ui| {
+        ui.heading("Blood Analyzer");
+        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+            let logo = egui::Image::new(egui::include_image!("../../images/bloodtestlogo.png"))
+                .max_height(36.0)
+                .sense(egui::Sense::click());
+            if ui.add(logo).on_hover_text("About Blood Analyzer").clicked() {
+                app.show_about_window = true;
+            }
         });
+    });
 
     ui.add_space(6.0);
 
@@ -40,13 +34,18 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
         if unit_system != app.unit_system {
             app.set_unit_system(unit_system);
         }
+    });
 
-        ui.separator();
+    ui.add_space(4.0);
 
+    ui.horizontal_wrapped(|ui| {
         ui.label("Panels:");
-        ui.checkbox(&mut app.show_cbc, Panel::Cbc.label());
-        ui.checkbox(&mut app.show_cmp, Panel::Cmp.label());
-        ui.checkbox(&mut app.show_lipid, Panel::Lipid.label());
+        for panel in Panel::ALL {
+            let mut enabled = app.panel_selected(panel);
+            if ui.checkbox(&mut enabled, panel.label()).changed() {
+                app.set_panel_selected(panel, enabled);
+            }
+        }
     });
 
     ui.add_space(6.0);
