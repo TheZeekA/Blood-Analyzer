@@ -9,8 +9,23 @@ pub fn show(ui: &mut egui::Ui, app: &mut BloodAnalyzerApp) {
     ui.horizontal(|ui| {
         ui.heading("Blood Analyzer");
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-            let logo = egui::Image::new(egui::include_image!("../../images/bloodtestlogo.png"))
-                .max_height(36.0)
+            // `fit_to_exact_size` forces the actual on-screen size; the
+            // default fit mode instead sizes the image as a fraction of
+            // whatever space happens to be available in the row at that
+            // point in the layout, which is why `max_height` alone had no
+            // visible effect no matter how high it was set.
+            //
+            // Sized to sit inline with the "Blood Analyzer" heading (18pt,
+            // ~24-27px tall rendered) rather than ballooning the row height
+            // and pushing everything below it further down the window.
+            //
+            // Uses a pre-downsampled 160x160 copy of the source 1024x1024
+            // logo rather than scaling the full-size original at runtime —
+            // egui's texture minification isn't mipmapped, so shrinking a
+            // 1024px source down to ~32px on the fly aliased badly and
+            // looked pixelated; downsampling once in advance avoids that.
+            let logo = egui::Image::new(egui::include_image!("../../images/bloodtestlogo_small.png"))
+                .fit_to_exact_size(egui::Vec2::splat(32.0))
                 .sense(egui::Sense::click());
             if ui.add(logo).on_hover_text("About Blood Analyzer").clicked() {
                 app.show_about_window = true;
