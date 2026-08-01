@@ -3,6 +3,7 @@ name = "blood_analyzer"
 version = "0.3.0"
 edition = "2024"
 build = "build.rs"
+license = "MIT"
 
 [dependencies]
 chrono = { version = "0.4.45", features = ["serde"] }
