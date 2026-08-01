@@ -44,7 +44,7 @@ wasted work on a PR that doesn't fit the project's direction.
 
 ## Submitting a pull request
 
-1. Push your branch to your fork and open a PR against `main`.
+1. Push your branch to your fork and open a PR against `testing`.
 2. Fill in the PR template — what changed and why, and how you tested it.
 3. Make sure CI passes (build, test, clippy, fmt).
 4. A maintainer will review and may ask for changes before merging.
