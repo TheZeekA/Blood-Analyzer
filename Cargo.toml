@@ -8,7 +8,7 @@ license = "MIT"
 [dependencies]
 chrono = { version = "0.4.45", features = ["serde"] }
 eframe = "0.35.0"
-egui = "0.35.0"
+egui = "0.36.2"
 egui_extras = { version = "0.35.0", default-features = false, features = ["image"] }
 genpdf = "0.2.0"
 rfd = "0.17.2"
